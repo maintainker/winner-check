@@ -1,8 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MainLayout, Root } from "./Components";
+import "./index.css";
 import * as Pages from "./Pages";
+import { MainLayout, Root } from "./Components";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -11,8 +12,8 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<Pages.Main />} />
 
-          <Route path="invite" element={<div>초대에러페이지</div>} />
-          <Route path="invite/:id" element={<div>초대페이지</div>} />
+          <Route path="invite" element={<Pages.InviteError />} />
+          <Route path="invite/:id" element={<Pages.InviteLanding />} />
 
           <Route path="app/:id" element={<MainLayout />}>
             <Route index element={<div>메인페이지</div>} />

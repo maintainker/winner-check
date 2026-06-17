@@ -1,17 +1,63 @@
+import { supabase } from "@Shared";
 import { useNavigate } from "react-router-dom";
 
 const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
   const navigate = useNavigate();
 
-  const handleJoin = (e: React.FormEvent) => {
+  const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("온클릭!!");
     console.log("id", id);
-    return;
-    // if (!nickname.trim()) return;
+    // 로그인 여부 판별
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    console.log("user", user);
+    console.log("authError", authError);
+    // 로그인 되어 있지 않다면 로그인 화면으로 이동
+    if (!user) {
+      //TODO: 모달 열어서 로그인 으로 이동시킬지 결정
 
-    // 나중에 Supabase 멤버 insert 로직이 여기에 들어갈 거야
-    navigate(`/app/${id}`);
+      navigate("/login", {
+        state: {
+          redirect: `/invite/${id}`,
+        },
+        replace: true,
+      });
+      return;
+    }
+    const { data: existingMember, error: checkError } = await supabase
+      .from("group_members")
+      .select("*")
+      .eq("group_id", id) // URL에서 가져온 모임 ID (id)
+      .eq("user_id", user.id)
+      .single();
+    console.log("existingMember", existingMember);
+    console.log("checkError", checkError);
+    // 로그인 되어 있고 이미 그룹에 있다면 바로 모임 페이지로 이동
+    if (existingMember) {
+      navigate(`/app/${id}`);
+      return;
+    }
+
+    // 로그인 되어 있다면 그룹에 멤버 추가
+    // TODO: 모달 추가해서 닉네임 입력 받기
+
+    const { error: insertError } = await supabase.from("group_members").insert([
+      {
+        group_id: id,
+        user_id: user.id,
+        nickname: "임시",
+      },
+    ]);
+    // 그룹 멤버 추가 성공하면 모임 페이지로 이동
+    if (!insertError) {
+      navigate(`/app/${id}`);
+      return;
+    }
+    console.log("insertError", insertError);
+    return;
   };
   return (
     <div className="flex flex-col justify-between h-full px-6 py-10 bg-white">

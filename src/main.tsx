@@ -12,6 +12,7 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<Pages.Main />} />
 
+          <Route path="login" element={<Pages.Login />} />
           <Route path="invite" element={<Pages.InviteError />} />
           <Route path="invite/:id" element={<Pages.InviteLanding />} />
 

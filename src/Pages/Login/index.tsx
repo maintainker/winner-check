@@ -1,5 +1,5 @@
 import { supabase } from "@Shared";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const Login = () => {
   const location = useLocation();
@@ -47,7 +47,7 @@ const Login = () => {
             onClick={() => handleSocialLogin("google")}
             className="w-full h-14 bg-white text-slate-700 font-bold rounded-xl border border-slate-200 flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-[0.99] transition-all cursor-pointer"
           >
-            🌐 Google로 시작하기
+            🌐 Google로 시작하기 (미구현)
           </button>
         </div>
       </div>

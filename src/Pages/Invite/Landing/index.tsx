@@ -1,32 +1,25 @@
-import { supabase } from "@Shared";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Invitation from "./Components/Invitation";
+import { useGroup } from "@Shared/apis/useGroup";
 
 const InviteLanding = () => {
   const { id } = useParams<{ id: string }>();
   const [groupName, setGroupName] = useState("");
+  const navigate = useNavigate();
 
+  const { data, isLoading, error } = useGroup(id!);
   useEffect(() => {
-    if (!id) return;
-
-    getGroupName(id);
-  }, []);
-
-  const getGroupName = async (id: string) => {
-    const { data, error } = await supabase
-      .from("groups")
-      .select("title")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error("[InviteLanding] Error fetching group name:", error);
+    if (isLoading) {
       return;
     }
-
-    setGroupName(data?.title || "");
-  };
+    if (error || !data) {
+      console.error("[InviteLanding] Error fetching group name:", error);
+      navigate("/invite", { replace: true });
+      return;
+    }
+    setGroupName(data.title);
+  }, [data, isLoading, error]);
   if (groupName !== "") {
     return <Invitation groupName={groupName} id={id} />;
   }

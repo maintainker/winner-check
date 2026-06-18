@@ -21,7 +21,7 @@ const InviteLanding = () => {
     setGroupName(data.title);
   }, [data, isLoading, error]);
   if (groupName !== "") {
-    return <Invitation groupName={groupName} id={id} />;
+    return <Invitation groupName={groupName} id={id!} />;
   }
   return (
     <div className="flex items-center justify-center w-full h-full">

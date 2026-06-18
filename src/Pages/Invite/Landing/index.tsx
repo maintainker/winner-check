@@ -20,9 +20,11 @@ const InviteLanding = () => {
     }
     setGroupName(data.title);
   }, [data, isLoading, error]);
+  console.log("1");
   if (groupName !== "") {
     return <Invitation groupName={groupName} id={id!} />;
   }
+  console.log("2");
   return (
     <div className="flex items-center justify-center w-full h-full">
       정보를 불러오는 중입니다.

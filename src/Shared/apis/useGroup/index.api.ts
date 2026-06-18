@@ -2,7 +2,7 @@ import { supabase } from "@Shared";
 
 export const fetchGroupInfo = async (groupId: string) => {
   const { data, error } = await supabase
-    .from("group")
+    .from("groups")
     .select("*")
     .eq("id", groupId)
     .single();

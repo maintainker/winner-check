@@ -21,7 +21,6 @@ const Login = () => {
     });
 
     if (error) {
-      console.error(`${provider} 로그인 에러:`, error.message);
       alert("로그인 중 오류가 발생했습니다.");
     }
   };

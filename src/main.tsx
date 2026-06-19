@@ -29,7 +29,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="invite/:id" element={<Pages.InviteLanding />} />
 
             <Route path="app/:id" element={<MainLayout />}>
-              <Route index element={<div>메인페이지</div>} />
+              <Route index element={<div className="bg-red">메인페이지</div>} />
               <Route path="search" element={<div>검색페이지</div>} />
               <Route path="winner" element={<div>당첨페이지</div>} />
             </Route>

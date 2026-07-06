@@ -31,6 +31,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="app/:groupId" element={<MainLayout />}>
               <Route index element={<Pages.Group.Main />} />
               <Route path="rank" element={<Pages.Group.Rank />} />
+              <Route path="log" element={<Pages.Group.Log />} />
               <Route path="winner" element={<div>당첨페이지</div>} />
               {/* <Route path="match"> */}
               <Route path="add" element={<Pages.Match.Add />} />

@@ -31,6 +31,10 @@ const GroupMain = () => {
       navigate(`rank`);
       return;
     }
+    if (menuName === "log") {
+      navigate(`log`);
+      return;
+    }
 
     alert(`${menuName} 페이지로 이동합니다.`);
   };
@@ -71,7 +75,7 @@ const GroupMain = () => {
           사진첩
         </button>
         <button
-          onClick={() => handleButtonClick("전적확인")}
+          onClick={() => handleButtonClick("log")}
           className={shadowButtonClasses}
         >
           전적

@@ -6,15 +6,10 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("온클릭!!");
-    console.log("id", id);
-    // 로그인 여부 판별
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
-    console.log("user", user);
-    console.log("authError", authError);
     // 로그인 되어 있지 않다면 로그인 화면으로 이동
     if (!user) {
       //TODO: 모달 열어서 로그인 으로 이동시킬지 결정
@@ -33,8 +28,6 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
       .eq("group_id", id) // URL에서 가져온 모임 ID (id)
       .eq("user_id", user.id)
       .single();
-    console.log("existingMember", existingMember);
-    console.log("checkError", checkError);
     // 로그인 되어 있고 이미 그룹에 있다면 바로 모임 페이지로 이동
     if (existingMember) {
       navigate(`/app/${id}`);

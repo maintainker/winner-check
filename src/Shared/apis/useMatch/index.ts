@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createMatch } from "./index.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createMatch, getMonthlyGroupStats } from "./index.api";
 
 export const useMutationCreateMatch = () => {
   const queryClient = useQueryClient();
@@ -21,5 +21,13 @@ export const useMutationCreateMatch = () => {
     onError: (error) => {
       console.error("❌ 매치 생성 뮤테이션 실패:", error);
     },
+  });
+};
+export const useQueryMonthlyGroupStats = (groupId: string) => {
+  return useQuery({
+    queryKey: ["monthly-stats", groupId],
+    queryFn: () => getMonthlyGroupStats(groupId),
+    enabled: !!groupId, // groupId가 유효할 때만 트리거
+    staleTime: 1000 * 60 * 5, // 통계 데이터이므로 5분간 캐시 유지 (선택)
   });
 };

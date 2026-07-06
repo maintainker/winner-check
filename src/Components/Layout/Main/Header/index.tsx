@@ -19,7 +19,7 @@ const Header = ({ title }: HeaderProps) => {
 
   return (
     <div
-      className={`flex ${!isHideNavi ? "justify-between" : "justify-center"} items-center px-[13px] mb-[20px] h-[50px] sticky top-0 z-10 bg-white`}
+      className={`flex ${!isHideNavi ? "justify-between" : "justify-center"} items-center px-[13px] mb-[20px] h-[50px] sticky top-0 z-10 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]`}
     >
       {!isHideNavi && (
         <button className="w-[50px]" onClick={handleBack}>

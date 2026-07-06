@@ -25,7 +25,7 @@ const GroupMain = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const introductionText =
-    "안녕하세요! 러닝 크루 대니입니다. 함께 달리실 분들은 아래 링크를 확인해 주세요! https://crew-link.com 모두 환영합니다!";
+    "안녕하세요! 러닝 크루 대니입니다. 함께 달리실 분들은 아래 링크를 확인해 주세요! https://www.naver.com 모두 환영합니다!";
   const handleButtonClick = (menuName: string) => {
     if (menuName === "rank") {
       navigate(`rank`);
@@ -83,7 +83,7 @@ const GroupMain = () => {
       {/* 플로팅 버튼 (+) */}
       <button
         onClick={() => navigate("add")}
-        className="fixed bottom-[30px] left-1/2 -translate-x-1/2 translate-x-[110px] w-14 h-14 rounded-full bg-gray-800 text-white text-3xl font-light flex items-center justify-center transition-all shadow-xl shadow-gray-400/50 hover:bg-gray-700 active:scale-95"
+        className="fixed bottom-[30px] left-[calc(50%+337.5px)] -translate-x-[calc(100%+30px)] max-[675px]:left-auto max-[675px]:right-[24px] max-[675px]:translate-x-0 w-14 h-14 rounded-full bg-gray-800 text-white text-3xl font-light flex items-center justify-center transition-all shadow-xl shadow-gray-400/50 hover:bg-gray-700 active:scale-95 z-50"
       >
         +
       </button>

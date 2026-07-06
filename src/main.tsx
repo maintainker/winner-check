@@ -28,10 +28,13 @@ createRoot(document.getElementById("root")!).render(
             <Route path="invite" element={<Pages.InviteError />} />
             <Route path="invite/:id" element={<Pages.InviteLanding />} />
 
-            <Route path="app/:id" element={<MainLayout />}>
-              <Route index element={<div className="bg-red">메인페이지</div>} />
-              <Route path="search" element={<div>검색페이지</div>} />
+            <Route path="app/:groupId" element={<MainLayout />}>
+              <Route index element={<Pages.Group.Main />} />
+              <Route path="rank" element={<Pages.Group.Rank />} />
               <Route path="winner" element={<div>당첨페이지</div>} />
+              {/* <Route path="match"> */}
+              <Route path="add" element={<Pages.Match.Add />} />
+              {/* </Route> */}
             </Route>
             <Route path="*" element={<div>404 페이지</div>} />
           </Routes>

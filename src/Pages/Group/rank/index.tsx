@@ -11,25 +11,25 @@ const tmpUid = "906a1b39-8ad4-4031-a1a7-c05691043275";
 const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
   const { groupId } = useParams();
 
-  // 1. 🚀 실시간 통계 데이터 호출 (이제 rank 컬럼이 포함되어 옵니다)
+  // 💡 1. 빌드 에러 해결: groupId가 undefined일 때 빈 문자열이 들어가도록 방어 처리
   const {
     data: rankingList = [],
     isLoading,
     isError,
-  } = useQueryMonthlyGroupStats(groupId);
+  } = useQueryMonthlyGroupStats(groupId ?? "");
 
   const currentMemberId = tmpUid;
 
   // 로딩/에러 처리
   if (isLoading)
     return (
-      <div className="flex justify-center items-center h-[calc(100vh - 75px)]">
+      <div className="flex justify-center items-center h-[calc(100vh-75px)]">
         통계를 불러오는 중...
       </div>
     );
   if (isError)
     return (
-      <div className="flex justify-center items-center h-[calc(100vh - 75px)] text-red-500">
+      <div className="flex justify-center items-center h-[calc(100vh-75px)] text-red-500">
         데이터를 불러오지 못했습니다.
       </div>
     );
@@ -42,7 +42,7 @@ const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
   const myInfo = myStat
     ? {
         nickname: myStat.nickname,
-        rank: myStat.rank, // 💡 인덱스 대신 DB에서 준 진짜 등수 사용!
+        rank: myStat.rank,
         points: myStat.monthlyPoints,
         winRate: myStat.winRate,
         record: `${myStat.wins}승 ${myStat.losses}패`,
@@ -51,10 +51,10 @@ const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
+
   return (
-    // 💡 화면이 넓어질 때(PC 등)도 480px 박스 자체가 화면 정중앙에 오도록 부모 flex 배치
     <div className="w-full flex justify-center">
-      <div className="flex flex-col w-full max-w-[480px] h-[calc(100vh - 75px)] bg-white p-4 pt-0 box-border mx-auto">
+      <div className="flex flex-col w-full max-w-[480px] h-[calc(100vh-75px)] bg-white p-4 pt-0 box-border mx-auto">
         {myInfo ? (
           <div className="flex items-center gap-5 pb-4 px-2 mb-5">
             <div className="w-[70px] h-[70px] rounded-full bg-gray-200 border border-gray-300 flex-shrink-0" />
@@ -83,7 +83,7 @@ const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
         )}
 
         <div
-          className="overflow-y-auto border-2 max-h-[calc(100vh - 274px);] border-gray-800 rounded-xl py-2 [&::-webkit-scrollbar]:hidden"
+          className="overflow-y-auto border-2 max-h-[calc(100vh-274px)] border-gray-800 rounded-xl py-2 [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {rankingList.map((member) => (

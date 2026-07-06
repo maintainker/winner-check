@@ -1,15 +1,17 @@
 import { useQueryMonthlyGroupStats } from "@Shared/apis/useMatch";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
-interface CrewRankingPageProps {
-  // currentMemberId: string; // 현재 로그인한 내 group_members 테이블의 ID
+interface GroupLayoutContext {
+  myMembership: {
+    groupMemberId: string; // group_members 테이블의 UUID
+    nickname: string; // 유저 닉네임
+  } | null;
 }
 
-const tmpUid = "906a1b39-8ad4-4031-a1a7-c05691043275";
-
-const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
+const CrewRankingPage: React.FC = () => {
   const { groupId } = useParams();
+  const { myMembership } = useOutletContext<GroupLayoutContext>();
 
   // 💡 1. 빌드 에러 해결: groupId가 undefined일 때 빈 문자열이 들어가도록 방어 처리
   const {
@@ -18,7 +20,7 @@ const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
     isError,
   } = useQueryMonthlyGroupStats(groupId ?? "");
 
-  const currentMemberId = tmpUid;
+  const currentMemberId = myMembership?.groupMemberId;
 
   // 로딩/에러 처리
   if (isLoading)

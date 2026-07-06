@@ -4,9 +4,10 @@ import { useLocation } from "react-router-dom";
 const Login = () => {
   const location = useLocation();
 
-  const redirectUrl = location.state?.redirect || "/invite";
+  const redirectUrl = location.state?.redirectUrl || "/invite";
 
   const handleSocialLogin = async (provider: "kakao" | "google") => {
+    // alert("");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: provider,
       options: {

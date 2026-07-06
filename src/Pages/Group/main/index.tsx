@@ -25,7 +25,7 @@ const GroupMain = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const introductionText =
-    "안녕하세요! 러닝 크루 대니입니다. 함께 달리실 분들은 아래 링크를 확인해 주세요! https://www.naver.com 모두 환영합니다!";
+    "안녕하세요! 인천 티츄모임입니다. 함께 티츄하실 모두를 환영합니다!";
   const handleButtonClick = (menuName: string) => {
     if (menuName === "rank") {
       navigate(`rank`);

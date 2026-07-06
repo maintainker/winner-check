@@ -7,7 +7,6 @@ const InviteLanding = () => {
   const { id } = useParams<{ id: string }>();
   const [groupName, setGroupName] = useState("");
   const navigate = useNavigate();
-
   const { data, isLoading, error } = useGroup(id!);
   useEffect(() => {
     if (isLoading) {
@@ -20,6 +19,7 @@ const InviteLanding = () => {
     }
     setGroupName(data.title);
   }, [data, isLoading, error]);
+  console.log("/test");
   if (groupName !== "") {
     return <Invitation groupName={groupName} id={id!} />;
   }

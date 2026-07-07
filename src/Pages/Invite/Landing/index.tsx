@@ -7,7 +7,6 @@ const InviteLanding = () => {
   const { id } = useParams<{ id: string }>();
   const [groupName, setGroupName] = useState("");
   const navigate = useNavigate();
-
   const { data, isLoading, error } = useGroup(id!);
   useEffect(() => {
     if (isLoading) {

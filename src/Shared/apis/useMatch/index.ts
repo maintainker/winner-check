@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createMatch, getMonthlyGroupStats } from "./index.api";
+import {
+  createMatch,
+  deleteMatchRecord,
+  getGroupMatchHistory,
+  getMonthlyGroupStats,
+} from "./index.api";
 
 export const useMutationCreateMatch = () => {
   const queryClient = useQueryClient();
@@ -11,6 +16,7 @@ export const useMutationCreateMatch = () => {
 
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["matches"] });
+      queryClient.invalidateQueries({ queryKey: ["group-matches"] });
       /*
       queryClient.invalidateQueries({ queryKey: ["monthly-stats"] });
       queryClient.invalidateQueries({ queryKey: ["group-members"] });
@@ -27,7 +33,34 @@ export const useQueryMonthlyGroupStats = (groupId: string) => {
   return useQuery({
     queryKey: ["monthly-stats", groupId],
     queryFn: () => getMonthlyGroupStats(groupId),
-    enabled: !!groupId, // groupId가 유효할 때만 트리거
-    staleTime: 1000 * 60 * 5, // 통계 데이터이므로 5분간 캐시 유지 (선택)
+    enabled: !!groupId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+export const useGroupMatchHistory = (
+  groupId: string,
+  year: number,
+  month: number,
+) => {
+  return useQuery({
+    queryKey: ["group-matches", groupId, year, month],
+    queryFn: () => getGroupMatchHistory(groupId, year, month),
+    enabled: !!groupId,
+  });
+};
+
+export const useDeleteMatch = (groupId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (matchId: string | number) => deleteMatchRecord(matchId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["matches"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["group-matches", groupId],
+      });
+    },
   });
 };

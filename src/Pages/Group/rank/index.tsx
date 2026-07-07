@@ -1,26 +1,35 @@
 import { useQueryMonthlyGroupStats } from "@Shared/apis/useMatch";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
-interface CrewRankingPageProps {
-  // currentMemberId: string; // 현재 로그인한 내 group_members 테이블의 ID
+interface GroupLayoutContext {
+  myMembership: {
+    groupMemberId: string;
+    nickname: string;
+  } | null;
 }
 
-const tmpUid = "906a1b39-8ad4-4031-a1a7-c05691043275";
-
-const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
+const CrewRankingPage: React.FC = () => {
   const { groupId } = useParams();
+  const { myMembership } = useOutletContext<GroupLayoutContext>();
 
-  // 💡 1. 빌드 에러 해결: groupId가 undefined일 때 빈 문자열이 들어가도록 방어 처리
   const {
-    data: rankingList = [],
+    data: rawRankingList = [],
     isLoading,
     isError,
   } = useQueryMonthlyGroupStats(groupId ?? "");
 
-  const currentMemberId = tmpUid;
+  const currentMemberId = myMembership?.groupMemberId;
 
-  // 로딩/에러 처리
+  const rankingList = React.useMemo(() => {
+    return [...rawRankingList]
+      .filter((item) => item.nickname !== "게스트")
+      .map((item, index) => ({
+        ...item,
+        rank: index + 1,
+      }));
+  }, [rawRankingList]);
+
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-[calc(100vh-75px)]">
@@ -34,7 +43,6 @@ const CrewRankingPage: React.FC<CrewRankingPageProps> = () => {
       </div>
     );
 
-  // 내 통계 찾기
   const myStat = rankingList.find(
     (member) => member.groupMemberId === currentMemberId,
   );

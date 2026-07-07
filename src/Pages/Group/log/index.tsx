@@ -15,7 +15,7 @@ const MatchHistoryPage: React.FC = () => {
   const { myMembership } = useOutletContext<{
     myMembership: {
       role: "admin" | "member" | "owner";
-    };
+    } | null;
   }>();
 
   const { groupId } = useParams();
@@ -39,7 +39,7 @@ const MatchHistoryPage: React.FC = () => {
     : defaultMonth;
 
   const { data: thisMonthLogs = [], isLoading } = useGroupMatchHistory(
-    groupId,
+    groupId!,
     targetYear,
     targetMonth,
   );
@@ -56,14 +56,12 @@ const MatchHistoryPage: React.FC = () => {
 
   const handleMonthChange = (year: number, month: number) => {
     const formattedMonth = month.toString().padStart(2, "0");
-    // 💡 안전하게 replace: true 콤보 유지
     setSearchParams({ date: `${year}-${formattedMonth}` }, { replace: true });
   };
 
   return (
     <div className="w-full flex justify-center bg-gray-50">
       <div className="flex flex-col w-full max-w-[675px] bg-white p-4 pt-4 box-border mx-auto relative">
-        {/* 상단 타이틀 세션 */}
         <div className="flex justify-between items-end mb-4">
           <div>
             <h2 className="text-lg font-bold text-gray-900">
@@ -76,7 +74,6 @@ const MatchHistoryPage: React.FC = () => {
 
           <button
             onClick={() => {
-              // 💡 dateParam이 null일 때를 대비해 타겟 문자열 조합해서 넘겨주기
               const currentParamStr =
                 dateParam ||
                 `${targetYear}-${String(targetMonth).padStart(2, "0")}`;
@@ -88,12 +85,10 @@ const MatchHistoryPage: React.FC = () => {
           </button>
         </div>
 
-        {/* 스크롤 영역 */}
         <div
           className="overflow-y-auto py-2 [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {/* 🚀 3. 로딩 상태 분기 처리 */}
           {isLoading ? (
             <div className="text-center text-gray-400 py-20 text-sm animate-pulse">
               기록을 불러오는 중입니다...
@@ -104,7 +99,7 @@ const MatchHistoryPage: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {thisMonthLogs.map((log: MatchLog) => (
+              {thisMonthLogs.map((log: any) => (
                 <div
                   key={log.id}
                   onClick={() => handleMatchClick(log.id)}
@@ -146,7 +141,9 @@ const MatchHistoryPage: React.FC = () => {
         </div>
       </div>
       <MatchDetailModal
-        isAdmin={myMembership.role !== "member"}
+        isAdmin={
+          myMembership?.role === "admin" || myMembership?.role === "owner"
+        }
         isOpen={isDetailOpen}
         matchId={selectedMatchId}
         onClose={() => {

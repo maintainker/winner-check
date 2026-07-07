@@ -112,9 +112,8 @@ export default function MatchRegistrationTailwind() {
         멤버를 불러오지 못했습니다.
       </div>
     );
-  console.log(members);
+
   return (
-    // 💡 전체 패딩을 모바일 환경(xs:p-4)에 맞춰 유연하게 다듬었습니다.
     <div className="flex flex-col items-center p-4 xs:p-5 gap-5 w-full box-border bg-gray-50 min-h-screen">
       {/* 승리 팀 영역 (A) */}
       <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-4 xs:p-5 flex flex-col gap-3 bg-white shadow-sm box-border">
@@ -122,7 +121,6 @@ export default function MatchRegistrationTailwind() {
           승 (Winner)
         </h3>
         {teamA.map((p, i) => (
-          // 💡 gap-3을 gap-2로 줄이고 너비 분배 최적화
           <div
             key={`A-${i}`}
             className="flex items-center gap-1.5 xs:gap-3 w-full"
@@ -135,12 +133,11 @@ export default function MatchRegistrationTailwind() {
               className="flex-1 min-w-0 h-[42px] px-1.5 xs:px-2.5 rounded-lg border border-gray-300 bg-white text-sm xs:text-base focus:outline-none focus:border-blue-500 truncation"
             >
               <option value="">멤버 선택</option>
-              {/* 💡 닉네임이 '게스트'인 유저를 맨 위로 정렬 */}
               {[...members]
                 .sort((a: any, b: any) => {
                   const aIsGuest = a.nickname === "게스트" ? 1 : 0;
                   const bIsGuest = b.nickname === "게스트" ? 1 : 0;
-                  return bIsGuest - aIsGuest; // 게스트가 앞으로 오도록 정렬
+                  return bIsGuest - aIsGuest;
                 })
                 .map((m: any) => (
                   <option key={m.id} value={m.id}>
@@ -149,7 +146,6 @@ export default function MatchRegistrationTailwind() {
                 ))}
             </select>
 
-            {/* 💡 입력 칸과 단위 텍스트 래퍼 추가로 찌그러짐 원천 차단 */}
             <div className="flex items-center gap-1 shrink-0">
               <input
                 type="number"
@@ -193,17 +189,16 @@ export default function MatchRegistrationTailwind() {
             <select
               value={p.group_members}
               onChange={(e) =>
-                handleParticipantChange("A", i, "group_members", e.target.value)
+                handleParticipantChange("B", i, "group_members", e.target.value)
               }
               className="flex-1 min-w-0 h-[42px] px-1.5 xs:px-2.5 rounded-lg border border-gray-300 bg-white text-sm xs:text-base focus:outline-none focus:border-blue-500 truncation"
             >
               <option value="">멤버 선택</option>
-              {/* 💡 닉네임이 '게스트'인 유저를 맨 위로 정렬 */}
               {[...members]
                 .sort((a: any, b: any) => {
                   const aIsGuest = a.nickname === "게스트" ? 1 : 0;
                   const bIsGuest = b.nickname === "게스트" ? 1 : 0;
-                  return bIsGuest - aIsGuest; // 게스트가 앞으로 오도록 정렬
+                  return bIsGuest - aIsGuest;
                 })
                 .map((m: any) => (
                   <option key={m.id} value={m.id}>

@@ -90,7 +90,6 @@ const MembersPage: React.FC = () => {
     )
       return;
 
-    // 💡 Mutation 실행
     kickMemberMutate(memberId, {
       onSuccess: () => {
         alert(`👋 [${nickname}] 님이 크루에서 성공적으로 추방되었습니다.`);

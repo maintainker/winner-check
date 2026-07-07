@@ -72,9 +72,8 @@ export const getMonthlyGroupStats = async (
     throw error;
   }
 
-  // 데이터베이스 스네이크 케이스 결과를 프론트엔드 카멜 케이스로 매핑
   return (data || []).map((row: any) => ({
-    rank: Number(row.rank), // 💡 2. DB에서 내려오는 스네이크 케이스 rank를 숫자로 변환해 매핑
+    rank: Number(row.rank),
     groupMemberId: row.group_member_id,
     nickname: row.nickname,
     totalMatches: Number(row.total_matches),

@@ -21,13 +21,12 @@ const CrewRankingPage: React.FC = () => {
 
   const currentMemberId = myMembership?.groupMemberId;
 
-  // 💡 [수정] 오직 'nickname'이 '게스트'인 사람만 필터링하고 순위를 새로 매깁니다.
   const rankingList = React.useMemo(() => {
     return [...rawRankingList]
-      .filter((item) => item.nickname !== "게스트") // 롤 조건 없이 닉네임으로만 필터링
+      .filter((item) => item.nickname !== "게스트")
       .map((item, index) => ({
         ...item,
-        rank: index + 1, // 중간 순위가 비지 않도록 1등부터 순서대로 재할당
+        rank: index + 1,
       }));
   }, [rawRankingList]);
 
@@ -44,7 +43,6 @@ const CrewRankingPage: React.FC = () => {
       </div>
     );
 
-  // 게스트가 빠진 리스트에서 내 정보를 정확하게 찾습니다.
   const myStat = rankingList.find(
     (member) => member.groupMemberId === currentMemberId,
   );
@@ -96,7 +94,6 @@ const CrewRankingPage: React.FC = () => {
           className="overflow-y-auto border-2 max-h-[calc(100vh-274px)] border-gray-800 rounded-xl py-2 [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {/* 💡 깔끔하게 필터링된 리스트를 뿌려줍니다. */}
           {rankingList.map((member) => (
             <div
               key={member.groupMemberId}

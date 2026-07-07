@@ -1,23 +1,21 @@
-import { useGroupMembers } from "@Shared/apis/useGroup";
+import {
+  useGroupMembers,
+  useMutationKickMember,
+  useMutationUpdateMemberRole,
+} from "@Shared/apis/useGroup";
 import React from "react";
-import { useParams, useNavigate, useOutletContext } from "react-router-dom";
-
-interface GroupMember {
-  id: string;
-  nickname: string;
-  role: "owner" | "admin" | "member" | "guest"; // 💡 guest 타입 추가
-  joinedAt: string;
-}
+import { useParams, useOutletContext } from "react-router-dom";
 
 const MembersPage: React.FC = () => {
   const { groupId } = useParams();
-  const navigate = useNavigate();
 
   const { myMembership } = useOutletContext<{
     myMembership: {
       role: "admin" | "member" | "owner" | "guest";
     } | null;
   }>();
+  const { mutate: updateRoleMutate } = useMutationUpdateMemberRole(groupId!);
+  const { mutate: kickMemberMutate } = useMutationKickMember(groupId!);
 
   const isAdmin =
     myMembership?.role === "admin" || myMembership?.role === "owner";
@@ -30,10 +28,9 @@ const MembersPage: React.FC = () => {
     member: 3,
   };
 
-  // 💡 [수정] 1. filter로 guest를 제외한 후 2. 정렬을 수행합니다.
   const displayMembers = React.useMemo(() => {
     return [...members]
-      .filter((member) => member.role?.toLowerCase() !== "guest") // ⭐ 게스트 차단 필터링 추가
+      .filter((member) => member.role?.toLowerCase() !== "guest")
       .sort((a, b) => {
         const roleA = a.role?.toLowerCase() || "member";
         const roleB = b.role?.toLowerCase() || "member";
@@ -63,7 +60,17 @@ const MembersPage: React.FC = () => {
 
     if (!window.confirm(confirmMessage)) return;
 
-    alert("권한 변경 기능은 Mutation을 연결해 주세요.");
+    updateRoleMutate(
+      { memberId, nextRole },
+      {
+        onSuccess: () => {
+          alert(`🎉 성공적으로 권한이 변경되었습니다.`);
+        },
+        onError: (err: any) => {
+          alert(`❌ 권한 변경 실패: ${err.message}`);
+        },
+      },
+    );
   };
 
   const handleKickMember = (
@@ -83,7 +90,15 @@ const MembersPage: React.FC = () => {
     )
       return;
 
-    alert(`${nickname}님 추방 기능은 Mutation을 연결해 주세요.`);
+    // 💡 Mutation 실행
+    kickMemberMutate(memberId, {
+      onSuccess: () => {
+        alert(`👋 [${nickname}] 님이 크루에서 성공적으로 추방되었습니다.`);
+      },
+      onError: (err: any) => {
+        alert(`❌ 추방 실패: ${err.message}`);
+      },
+    });
   };
 
   const getRoleBadge = (role: "owner" | "admin" | "member" | "guest") => {
@@ -112,21 +127,18 @@ const MembersPage: React.FC = () => {
   return (
     <div className="w-full flex justify-center bg-gray-50 min-h-screen">
       <div className="flex flex-col w-full max-w-[675px] bg-white p-5 pt-4 box-border mx-auto relative shadow-sm">
-        {/* 상단 헤더 */}
         <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
           <div>
             <h2 className="text-lg font-bold text-gray-900">
               멤버 목록 및 관리
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              {/* 💡 총 인원수에서도 게스트 수를 뺀 실제 정식 멤버 인원수만 표기하도록 변경 */}
               우리 모임의 총 인원은 {isLoading ? "-" : displayMembers.length}
               명입니다.
             </p>
           </div>
         </div>
 
-        {/* 로딩 / 에러 / 목록 출력 분기 */}
         {isLoading ? (
           <div className="text-center text-gray-400 py-12 text-sm animate-pulse">
             멤버 목록을 불러오는 중...
@@ -140,14 +152,12 @@ const MembersPage: React.FC = () => {
             등록된 멤버가 없습니다.
           </div>
         ) : (
-          /* 💡 displayMembers 사용 */
           <div className="flex flex-col pb-[20px] gap-3 overflow-y-auto max-h-[calc(100vh-160px)] [&::-webkit-scrollbar]:hidden">
             {displayMembers.map((member) => (
               <div
                 key={member.id}
                 className="flex justify-between items-center px-4 py-3.5 border border-gray-100 rounded-xl bg-white shadow-sm hover:border-gray-300 transition-all"
               >
-                {/* 왼쪽: 멤버 기본 정보 */}
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 font-bold text-sm">
                     {member.nickname?.[0] || "?"}
@@ -166,7 +176,6 @@ const MembersPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 오른쪽: 관리 액션 제어 버튼 */}
                 <div className="flex items-center">
                   {isAdmin && member.role !== "owner" && (
                     <div className="flex items-center gap-1">

@@ -45,3 +45,35 @@ export const getGroupMembers = async (
     joinedAt: member.joined_at ? member.joined_at.split("T")[0] : "-",
   }));
 };
+
+interface UpdateRoleParams {
+  memberId: string;
+  nextRole: "admin" | "member";
+}
+
+export const updateMemberRoleApi = async ({
+  memberId,
+  nextRole,
+}: UpdateRoleParams) => {
+  const { data, error } = await supabase.rpc("update_member_role", {
+    target_member_id: memberId,
+    new_role: nextRole,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};
+
+export const kickMemberApi = async (memberId: string) => {
+  const { data, error } = await supabase
+    .from("group_members")
+    .delete()
+    .eq("id", memberId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};

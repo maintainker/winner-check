@@ -15,28 +15,33 @@ export const fetchGroupInfo = async (groupId: string) => {
 export interface GroupMemberResponse {
   id: string;
   nickname: string;
+  role: "owner" | "admin" | "member";
+  joinedAt: string;
 }
-
 export const getGroupMembers = async (
   groupId: string,
 ): Promise<GroupMemberResponse[]> => {
+  if (!groupId) return [];
+
   const { data, error } = await supabase
     .from("group_members")
     .select(
       `
       id,
-      nickname
+      nickname,
+      role,
+      joined_at
     `,
     )
-    .eq("group_id", groupId);
-  console.log(data);
-  if (error) {
-    throw error;
-  }
+    .eq("group_id", groupId)
+    .order("joined_at", { ascending: true });
 
-  // 💡 Supabase에서 나온 중첩 객체 데이터를 프론트에서 쓰기 좋게 평평하게(Flat) 가공합니다.
+  if (error) throw error;
+
   return (data || []).map((member: any) => ({
-    id: member.id,
+    id: String(member.id),
     nickname: member.nickname,
+    role: member.role?.toLowerCase() as "owner" | "admin" | "member",
+    joinedAt: member.joined_at ? member.joined_at.split("T")[0] : "-",
   }));
 };

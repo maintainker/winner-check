@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import * as Pages from "./Pages";
 import * as Components from "@Components";
-// import { MainLayout, Root } from "./Components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient({
@@ -37,10 +36,8 @@ createRoot(document.getElementById("root")!).render(
                 <Route index element={<Pages.Group.Main />} />
                 <Route path="rank" element={<Pages.Group.Rank />} />
                 <Route path="log" element={<Pages.Group.Log />} />
-                <Route path="winner" element={<div>당첨페이지</div>} />
-                {/* <Route path="match"> */}
+                <Route path="members" element={<Pages.Group.Members />} />
                 <Route path="add" element={<Pages.Match.Add />} />
-                {/* </Route> */}
               </Route>
             </Route>
             <Route path="*" element={<div>404 페이지</div>} />

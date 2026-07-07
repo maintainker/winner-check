@@ -2,26 +2,26 @@ import { useGroupMembers } from "@Shared/apis/useGroup";
 import { useMutationCreateMatch } from "@Shared/apis/useMatch";
 import { useParams } from "react-router-dom";
 import React, { useState } from "react";
+
 interface ParticipantState {
   group_members: string;
   bet_point: number;
 }
 
 export default function MatchRegistrationTailwind() {
-  // 1. 🚀 DB에서 실제 멤버 리스트 받아오기
-
   const { groupId } = useParams();
 
   if (!groupId) {
-    return <div>모임 정보를 찾을 수 없습니다.</div>;
+    return (
+      <div className="text-center p-10 text-gray-500">
+        모임 정보를 찾을 수 없습니다.
+      </div>
+    );
   }
 
   const { data: members = [], isLoading, isError } = useGroupMembers(groupId);
-
-  // 2. 🚀 매치 생성 뮤테이션 훅 연결
   const { mutate: createMatchMutate, isPending } = useMutationCreateMatch();
 
-  // 승리팀과 패배팀 참여자 상태
   const [teamA, setTeamA] = useState<ParticipantState[]>([
     { group_members: "", bet_point: 1 },
     { group_members: "", bet_point: 1 },
@@ -31,7 +31,6 @@ export default function MatchRegistrationTailwind() {
     { group_members: "", bet_point: 1 },
   ]);
 
-  // 입력값 변경 핸들러
   const handleParticipantChange = (
     team: "A" | "B",
     index: number,
@@ -43,13 +42,11 @@ export default function MatchRegistrationTailwind() {
     team === "A" ? setTeamA(updateTeam) : setTeamB(updateTeam);
   };
 
-  // 인원 동적 추가
   const addMemberInput = (team: "A" | "B") => {
     if (team === "A") setTeamA([...teamA, { group_members: "", bet_point: 1 }]);
     else setTeamB([...teamB, { group_members: "", bet_point: 1 }]);
   };
 
-  // 3. [완료] 버튼 클릭 시 실전 등록 로직
   const handleSubmit = () => {
     const hasEmptySelection = [...teamA, ...teamB].some(
       (p) => !p.group_members,
@@ -69,7 +66,6 @@ export default function MatchRegistrationTailwind() {
       return;
     }
 
-    // 💡 API 스펙에 맞게 페이로드 조립
     const payload = {
       groupId,
       participants: [
@@ -88,11 +84,9 @@ export default function MatchRegistrationTailwind() {
       ],
     };
 
-    // 🚀 리액트 쿼리 뮤테이션 실행
     createMatchMutate(payload, {
       onSuccess: () => {
         alert("🎉 매치가 성공적으로 등록되었습니다!");
-        // 성공 시 폼 초기화
         setTeamA([
           { group_members: "", bet_point: 1 },
           { group_members: "", bet_point: 1 },
@@ -108,7 +102,6 @@ export default function MatchRegistrationTailwind() {
     });
   };
 
-  // 로딩 및 에러 상태 처리 UI
   if (isLoading)
     return (
       <div className="text-center p-10 text-gray-500">멤버 목록 로딩 중...</div>
@@ -119,99 +112,130 @@ export default function MatchRegistrationTailwind() {
         멤버를 불러오지 못했습니다.
       </div>
     );
-
+  console.log(members);
   return (
-    <div className="flex flex-col items-center p-5 gap-6 w-full box-border">
+    // 💡 전체 패딩을 모바일 환경(xs:p-4)에 맞춰 유연하게 다듬었습니다.
+    <div className="flex flex-col items-center p-4 xs:p-5 gap-5 w-full box-border bg-gray-50 min-h-screen">
       {/* 승리 팀 영역 (A) */}
-      <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-5 flex flex-col gap-3.5 bg-white shadow-sm box-border">
-        <h3 className="m-0 text-center text-[#4285F4] text-xl font-bold">
+      <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-4 xs:p-5 flex flex-col gap-3 bg-white shadow-sm box-border">
+        <h3 className="m-0 text-center text-[#4285F4] text-lg xs:text-xl font-bold">
           승 (Winner)
         </h3>
         {teamA.map((p, i) => (
-          <div key={`A-${i}`} className="flex items-center gap-3">
+          // 💡 gap-3을 gap-2로 줄이고 너비 분배 최적화
+          <div
+            key={`A-${i}`}
+            className="flex items-center gap-1.5 xs:gap-3 w-full"
+          >
             <select
               value={p.group_members}
               onChange={(e) =>
                 handleParticipantChange("A", i, "group_members", e.target.value)
               }
-              className="flex-[2] h-[42px] px-2.5 rounded-lg border border-gray-300 bg-white text-base focus:outline-none focus:border-blue-500"
+              className="flex-1 min-w-0 h-[42px] px-1.5 xs:px-2.5 rounded-lg border border-gray-300 bg-white text-sm xs:text-base focus:outline-none focus:border-blue-500 truncation"
             >
               <option value="">멤버 선택</option>
-              {/* 💡 임시 배열 대신 API로 받아온 실제 멤버 리스트 렌더링 */}
-              {members.map((m: any) => (
-                <option key={m.id} value={m.id}>
-                  {m.nickname}{" "}
-                </option>
-              ))}
+              {/* 💡 닉네임이 '게스트'인 유저를 맨 위로 정렬 */}
+              {[...members]
+                .sort((a: any, b: any) => {
+                  const aIsGuest = a.nickname === "게스트" ? 1 : 0;
+                  const bIsGuest = b.nickname === "게스트" ? 1 : 0;
+                  return bIsGuest - aIsGuest; // 게스트가 앞으로 오도록 정렬
+                })
+                .map((m: any) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nickname}
+                  </option>
+                ))}
             </select>
-            <input
-              type="number"
-              min="1"
-              max="3"
-              value={p.bet_point}
-              onChange={(e) =>
-                handleParticipantChange(
-                  "A",
-                  i,
-                  "bet_point",
-                  Number(e.target.value),
-                )
-              }
-              className="w-[60px] h-10 rounded-lg border border-gray-300 text-center text-base focus:outline-none focus:border-blue-500"
-            />
-            <span className="text-base text-gray-600">점</span>
+
+            {/* 💡 입력 칸과 단위 텍스트 래퍼 추가로 찌그러짐 원천 차단 */}
+            <div className="flex items-center gap-1 shrink-0">
+              <input
+                type="number"
+                min="1"
+                max="3"
+                value={p.bet_point}
+                onChange={(e) =>
+                  handleParticipantChange(
+                    "A",
+                    i,
+                    "bet_point",
+                    Number(e.target.value),
+                  )
+                }
+                className="w-12 xs:w-[60px] h-10 rounded-lg border border-gray-300 text-center text-sm xs:text-base focus:outline-none focus:border-blue-500"
+              />
+              <span className="text-sm xs:text-base text-gray-600 font-medium">
+                점
+              </span>
+            </div>
           </div>
         ))}
         <button
           onClick={() => addMemberInput("A")}
-          className="bg-none border border-dashed border-gray-400 p-2.5 rounded-lg cursor-pointer text-gray-600 text-[0.95rem] transition-all hover:bg-gray-50 hover:border-gray-600"
+          className="bg-none border border-dashed border-gray-400 p-2.5 rounded-lg cursor-pointer text-gray-600 text-sm xs:text-[0.95rem] transition-all hover:bg-gray-50 hover:border-gray-600"
         >
           + 인원 추가
         </button>
       </div>
 
       {/* 패배 팀 영역 (B) */}
-      <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-5 flex flex-col gap-3.5 bg-white shadow-sm box-border">
-        <h3 className="m-0 text-center text-[#EA4335] text-xl font-bold">
+      <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-4 xs:p-5 flex flex-col gap-3 bg-white shadow-sm box-border">
+        <h3 className="m-0 text-center text-[#EA4335] text-lg xs:text-xl font-bold">
           패 (Loser)
         </h3>
         {teamB.map((p, i) => (
-          <div key={`B-${i}`} className="flex items-center gap-3">
+          <div
+            key={`B-${i}`}
+            className="flex items-center gap-1.5 xs:gap-3 w-full"
+          >
             <select
               value={p.group_members}
               onChange={(e) =>
-                handleParticipantChange("B", i, "group_members", e.target.value)
+                handleParticipantChange("A", i, "group_members", e.target.value)
               }
-              className="flex-[2] h-[42px] px-2.5 rounded-lg border border-gray-300 bg-white text-base focus:outline-none focus:border-red-500"
+              className="flex-1 min-w-0 h-[42px] px-1.5 xs:px-2.5 rounded-lg border border-gray-300 bg-white text-sm xs:text-base focus:outline-none focus:border-blue-500 truncation"
             >
               <option value="">멤버 선택</option>
-              {members.map((m: any) => (
-                <option key={m.id} value={m.id}>
-                  {m.nickname}
-                </option>
-              ))}
+              {/* 💡 닉네임이 '게스트'인 유저를 맨 위로 정렬 */}
+              {[...members]
+                .sort((a: any, b: any) => {
+                  const aIsGuest = a.nickname === "게스트" ? 1 : 0;
+                  const bIsGuest = b.nickname === "게스트" ? 1 : 0;
+                  return bIsGuest - aIsGuest; // 게스트가 앞으로 오도록 정렬
+                })
+                .map((m: any) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nickname}
+                  </option>
+                ))}
             </select>
-            <input
-              type="number"
-              min="1"
-              max="3"
-              value={p.bet_point}
-              onChange={(e) =>
-                handleParticipantChange(
-                  "B",
-                  i,
-                  "bet_point",
-                  Number(e.target.value),
-                )
-              }
-              className="w-[60px] h-10 rounded-lg border border-gray-300 text-center text-base focus:outline-none focus:border-red-500"
-            />
-            <span className="text-base text-gray-600">점</span>
+            <div className="flex items-center gap-1 shrink-0">
+              <input
+                type="number"
+                min="1"
+                max="3"
+                value={p.bet_point}
+                onChange={(e) =>
+                  handleParticipantChange(
+                    "B",
+                    i,
+                    "bet_point",
+                    Number(e.target.value),
+                  )
+                }
+                className="w-12 xs:w-[60px] h-10 rounded-lg border border-gray-300 text-center text-sm xs:text-base focus:outline-none focus:border-red-500"
+              />
+              <span className="text-sm xs:text-base text-gray-600 font-medium">
+                점
+              </span>
+            </div>
           </div>
         ))}
         <button
           onClick={() => addMemberInput("B")}
-          className="bg-none border border-dashed border-gray-400 p-2.5 rounded-lg cursor-pointer text-gray-600 text-[0.95rem] transition-all hover:bg-gray-50 hover:border-gray-600"
+          className="bg-none border border-dashed border-gray-400 p-2.5 rounded-lg cursor-pointer text-gray-600 text-sm xs:text-[0.95rem] transition-all hover:bg-gray-50 hover:border-gray-600"
         >
           + 인원 추가
         </button>
@@ -220,7 +244,7 @@ export default function MatchRegistrationTailwind() {
       <button
         onClick={handleSubmit}
         disabled={isPending}
-        className={`w-full max-w-[450px] h-14 text-white border-none rounded-xl text-lg font-bold transition-colors ${
+        className={`w-full max-w-[450px] h-12 xs:h-14 text-white border-none rounded-xl text-base xs:text-lg font-bold transition-colors ${
           isPending
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-[#1a1a1a] cursor-pointer hover:bg-gray-800"

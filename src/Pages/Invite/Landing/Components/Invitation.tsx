@@ -56,6 +56,14 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
     if (!user) {
       return;
     }
+    if (
+      nickname === "게스트" ||
+      nickname === "모임장" ||
+      nickname === "운영진"
+    ) {
+      alert("불가능한 닉네임입니다.");
+      return;
+    }
     const { error: insertError } = await supabase.from("group_members").insert([
       {
         group_id: id,

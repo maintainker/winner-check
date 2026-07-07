@@ -19,7 +19,6 @@ const InviteLanding = () => {
     }
     setGroupName(data.title);
   }, [data, isLoading, error]);
-  console.log("/test");
   if (groupName !== "") {
     return <Invitation groupName={groupName} id={id!} />;
   }

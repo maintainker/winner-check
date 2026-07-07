@@ -8,7 +8,8 @@ export const getMyGroupMembership = async (groupId: string, userId: string) => {
     .select(
       `
       id,
-      nickname
+      nickname,
+      role
     `,
     )
     .eq("group_id", groupId)
@@ -21,5 +22,6 @@ export const getMyGroupMembership = async (groupId: string, userId: string) => {
   return {
     groupMemberId: data.id,
     nickname: data.nickname,
+    role: data.role,
   };
 };

@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useGroupMembers } from "@Shared/apis/useGroup";
+import { useNavigate, useParams } from "react-router-dom";
 
 const renderTextWithLinks = (text: string) => {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -23,6 +24,13 @@ const renderTextWithLinks = (text: string) => {
 
 const GroupMain = () => {
   const navigate = useNavigate();
+  const { groupId } = useParams();
+
+  const { data: members = [], isLoading } = useGroupMembers(groupId!);
+
+  const ownerMember = members.find(
+    (m: any) => m.role?.toLowerCase() === "owner",
+  );
 
   const introductionText =
     "안녕하세요! 인천 티츄모임입니다. 함께 티츄하실 모두를 환영합니다!";
@@ -54,7 +62,9 @@ const GroupMain = () => {
           <div className="w-[44px] h-[44px] rounded-full bg-gray-200 border border-gray-300 mr-3 flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-xs text-gray-400 mb-0.5">모임장</span>
-            <span className="text-sm font-semibold text-gray-800">홍길동</span>
+            <span className="text-sm font-semibold text-gray-800">
+              {ownerMember?.nickname || "모임장"}
+            </span>
           </div>
         </div>
       </div>

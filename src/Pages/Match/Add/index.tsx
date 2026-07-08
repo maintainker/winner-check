@@ -2,6 +2,7 @@ import { useGroupMembers } from "@Shared/apis/useGroup";
 import { useMutationCreateMatch } from "@Shared/apis/useMatch";
 import { useParams } from "react-router-dom";
 import React, { useState } from "react";
+import AdsenseBanner from "@Components/Adsence";
 
 interface ParticipantState {
   group_members: string;
@@ -114,8 +115,7 @@ export default function MatchRegistrationTailwind() {
     );
 
   return (
-    <div className="flex flex-col items-center p-4 xs:p-5 gap-5 w-full box-border bg-gray-50 min-h-screen">
-      {/* 승리 팀 영역 (A) */}
+    <div className="flex flex-col items-center p-4 xs:p-5 gap-5 w-full box-border bg-gray-50 min-h-screen h-full">
       <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-4 xs:p-5 flex flex-col gap-3 bg-white shadow-sm box-border">
         <h3 className="m-0 text-center text-[#4285F4] text-lg xs:text-xl font-bold">
           승 (Winner)
@@ -176,7 +176,10 @@ export default function MatchRegistrationTailwind() {
         </button>
       </div>
 
-      {/* 패배 팀 영역 (B) */}
+      <div className="w-full max-w-[450px] max-h-[120px] overflow-hidden flex items-center justify-center py-1">
+        <AdsenseBanner />
+      </div>
+
       <div className="w-full max-w-[450px] border border-gray-200 rounded-2xl p-4 xs:p-5 flex flex-col gap-3 bg-white shadow-sm box-border">
         <h3 className="m-0 text-center text-[#EA4335] text-lg xs:text-xl font-bold">
           패 (Loser)

@@ -1,6 +1,8 @@
+import AdsenseBanner from "@Components/Adsence";
 import { supabase } from "@Shared";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+// 💡 방금 만든 광고 컴포넌트 임포트 (경로는 프로젝트에 맞게 수정)
 
 const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
   const navigate = useNavigate();
@@ -10,7 +12,6 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [nickname, setNickname] = useState("");
 
-  // console.log("login:", loginFlag);
   useEffect(() => {
     if (loginFlag) {
       setIsModalOpen(true);
@@ -35,10 +36,10 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
     const { data: existingMember, error: checkError } = await supabase
       .from("group_members")
       .select("*")
-      .eq("group_id", id) // URL에서 가져온 모임 ID (id)
+      .eq("group_id", id)
       .eq("user_id", user.id)
       .single();
-    // 로그인 되어 있고 이미 그룹에 있다면 바로 모임 페이지로 이동
+
     if (existingMember) {
       navigate(`/app/${id}`);
       return;
@@ -46,6 +47,7 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
     setIsModalOpen(true);
     return;
   };
+
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -62,6 +64,7 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
       nickname === "운영진"
     ) {
       alert("불가능한 닉네임입니다.");
+      setIsSubmitting(false); // 가입 실패 시 제출 상태 해제
       return;
     }
     const { error: insertError } = await supabase.from("group_members").insert([
@@ -71,7 +74,7 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
         nickname: nickname,
       },
     ]);
-    // 그룹 멤버 추가 성공하면 모임 페이지로 이동
+
     if (!insertError) {
       navigate(`/app/${id}`);
       return;
@@ -92,14 +95,22 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
         </h1>
       </div>
 
+      {/* 💡 [광고 삽입] 타이틀과 가입 버튼 사이 빈 공간에 광고를 배치합니다 */}
+      <div className="flex-1 flex items-center justify-center my-6">
+        <AdsenseBanner />
+      </div>
+
+      {/* 하단 버튼 영역 */}
       <form onSubmit={handleLogin} className="w-full space-y-5">
         <button
           type="submit"
-          className={`w-full h-14 rounded-xl text-base font-bold transition-all flex items-center justify-center cursor-pointer ${"bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]"}`}
+          className="w-full h-14 rounded-xl text-base font-bold transition-all flex items-center justify-center cursor-pointer bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]"
         >
           가입하고 입장하기
         </button>
       </form>
+
+      {/* 닉네임 설정 모달 */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-[360px] bg-white rounded-2xl p-6 shadow-xl animate-in fade-in zoom-in-95 duration-150">
@@ -144,4 +155,5 @@ const Invitation = ({ groupName, id }: { groupName: string; id: string }) => {
     </div>
   );
 };
+
 export default Invitation;
